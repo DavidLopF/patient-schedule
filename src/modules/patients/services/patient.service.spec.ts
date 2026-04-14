@@ -60,7 +60,9 @@ describe('PatientService', () => {
       });
 
       expect(result).toEqual(mockPatient());
-      expect(repository.findByIdentification).toHaveBeenCalledWith('1234567890');
+      expect(repository.findByIdentification).toHaveBeenCalledWith(
+        '1234567890',
+      );
     });
 
     it('should throw ConflictException when patient already exists', async () => {
@@ -89,7 +91,9 @@ describe('PatientService', () => {
 
     it('should throw NotFoundException when patient not found', async () => {
       repository.findById.mockResolvedValue(null);
-      await expect(service.findOne('non-existent')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -114,9 +118,9 @@ describe('PatientService', () => {
 
     it('should throw NotFoundException on update of non-existent patient', async () => {
       repository.findById.mockResolvedValue(null);
-      await expect(service.update('non-existent', { firstName: 'Jane' })).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.update('non-existent', { firstName: 'Jane' }),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -129,7 +133,9 @@ describe('PatientService', () => {
 
     it('should throw NotFoundException on remove of non-existent patient', async () => {
       repository.findById.mockResolvedValue(null);
-      await expect(service.remove('non-existent')).rejects.toThrow(NotFoundException);
+      await expect(service.remove('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

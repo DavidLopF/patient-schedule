@@ -1,11 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  Repository,
-  DataSource,
-  EntityManager,
-  Between,
-} from 'typeorm';
+import { Repository, DataSource, EntityManager, Between } from 'typeorm';
 import { Appointment, AppointmentStatus } from '../entities/appointment.entity';
 import { MedicalOrder } from '../entities/medical-order.entity';
 import { Doctor } from '../../doctors/entities/doctor.entity';
@@ -78,7 +73,9 @@ export class AppointmentRepository {
     });
   }
 
-  async findByPatientIdentification(identification: string): Promise<Appointment[]> {
+  async findByPatientIdentification(
+    identification: string,
+  ): Promise<Appointment[]> {
     return this.repo
       .createQueryBuilder('a')
       .leftJoinAndSelect('a.doctor', 'doctor')
@@ -126,7 +123,10 @@ export class AppointmentRepository {
     return this.repo.save(appointment);
   }
 
-  async addMedicalOrder(appointment: Appointment, orderData: Partial<MedicalOrder>): Promise<MedicalOrder> {
+  async addMedicalOrder(
+    appointment: Appointment,
+    orderData: Partial<MedicalOrder>,
+  ): Promise<MedicalOrder> {
     const order = this.orderRepo.create({ ...orderData, appointment });
     return this.orderRepo.save(order);
   }

@@ -17,7 +17,10 @@ import { AppDataSource } from './data-source';
 import { User } from '../modules/auth/entities/user.entity';
 import { Patient } from '../modules/patients/entities/patient.entity';
 import { Doctor } from '../modules/doctors/entities/doctor.entity';
-import { Appointment, AppointmentStatus } from '../modules/appointments/entities/appointment.entity';
+import {
+  Appointment,
+  AppointmentStatus,
+} from '../modules/appointments/entities/appointment.entity';
 import { MedicalOrder } from '../modules/appointments/entities/medical-order.entity';
 import { Role } from '../common/enums/role.enum';
 
@@ -26,9 +29,13 @@ dotenv.config();
 // ─── Seed Data ────────────────────────────────────────────────────────────────
 
 const USERS = [
-  { email: 'admin@hospital.com',       password: 'Admin123!',       role: Role.ADMIN },
-  { email: 'doctor@hospital.com',      password: 'Doctor123!',      role: Role.DOCTOR },
-  { email: 'receptionist@hospital.com',password: 'Reception123!',   role: Role.RECEPTIONIST },
+  { email: 'admin@hospital.com', password: 'Admin123!', role: Role.ADMIN },
+  { email: 'doctor@hospital.com', password: 'Doctor123!', role: Role.DOCTOR },
+  {
+    email: 'receptionist@hospital.com',
+    password: 'Reception123!',
+    role: Role.RECEPTIONIST,
+  },
 ];
 
 const DOCTORS = [
@@ -105,7 +112,9 @@ function skip(msg: string) {
 
 // ─── Seed Functions ───────────────────────────────────────────────────────────
 
-async function seedUsers(userRepo: import('typeorm').Repository<User>): Promise<void> {
+async function seedUsers(
+  userRepo: import('typeorm').Repository<User>,
+): Promise<void> {
   console.log('\n👤 Seeding users...');
 
   for (const data of USERS) {
@@ -117,7 +126,9 @@ async function seedUsers(userRepo: import('typeorm').Repository<User>): Promise<
 
     const passwordHash = await bcrypt.hash(data.password, 12);
     await userRepo.save(userRepo.create({ ...data, passwordHash }));
-    log(`✅ Created user [${data.role}]: ${data.email}  →  password: ${data.password}`);
+    log(
+      `✅ Created user [${data.role}]: ${data.email}  →  password: ${data.password}`,
+    );
   }
 }
 
@@ -128,7 +139,9 @@ async function seedDoctors(
   const result: Doctor[] = [];
 
   for (const data of DOCTORS) {
-    const exists = await doctorRepo.findOne({ where: { identification: data.identification } });
+    const exists = await doctorRepo.findOne({
+      where: { identification: data.identification },
+    });
     if (exists) {
       skip(`Doctor ${data.firstName} ${data.lastName}`);
       result.push(exists);
@@ -137,7 +150,9 @@ async function seedDoctors(
 
     const doctor = await doctorRepo.save(doctorRepo.create(data));
     result.push(doctor);
-    log(`✅ Created doctor: Dr. ${doctor.firstName} ${doctor.lastName} (${doctor.professionalCard})`);
+    log(
+      `✅ Created doctor: Dr. ${doctor.firstName} ${doctor.lastName} (${doctor.professionalCard})`,
+    );
   }
 
   return result;
@@ -150,7 +165,9 @@ async function seedPatients(
   const result: Patient[] = [];
 
   for (const data of PATIENTS) {
-    const exists = await patientRepo.findOne({ where: { identification: data.identification } });
+    const exists = await patientRepo.findOne({
+      where: { identification: data.identification },
+    });
     if (exists) {
       skip(`Patient ${data.firstName} ${data.lastName}`);
       result.push(exists);
@@ -212,7 +229,9 @@ async function seedAppointments(
     });
 
     if (exists) {
-      skip(`Appointment ${data.doctor.firstName} ↔ ${data.patient.firstName} @ ${data.appointmentDate.toISOString()}`);
+      skip(
+        `Appointment ${data.doctor.firstName} ↔ ${data.patient.firstName} @ ${data.appointmentDate.toISOString()}`,
+      );
       continue;
     }
 
@@ -222,7 +241,8 @@ async function seedAppointments(
         patient: data.patient,
         appointmentDate: data.appointmentDate,
         status: data.status,
-        statusUpdatedAt: (data as { statusUpdatedAt?: Date }).statusUpdatedAt ?? null,
+        statusUpdatedAt:
+          (data as { statusUpdatedAt?: Date }).statusUpdatedAt ?? null,
       }),
     );
 
@@ -250,7 +270,9 @@ async function seedAppointments(
 async function main(): Promise<void> {
   console.log('🌱 Starting database seed...');
   console.log(`   Environment: ${process.env.NODE_ENV ?? 'development'}`);
-  console.log(`   Database:    ${process.env.DB_NAME ?? 'hospital_db'} @ ${process.env.DB_HOST ?? 'localhost'}`);
+  console.log(
+    `   Database:    ${process.env.DB_NAME ?? 'hospital_db'} @ ${process.env.DB_HOST ?? 'localhost'}`,
+  );
 
   await AppDataSource.initialize();
   console.log('   Connected to database ✓');
@@ -260,14 +282,14 @@ async function main(): Promise<void> {
   await AppDataSource.synchronize();
   console.log('   Schema synchronized ✓');
 
-  const userRepo        = AppDataSource.getRepository(User);
-  const doctorRepo      = AppDataSource.getRepository(Doctor);
-  const patientRepo     = AppDataSource.getRepository(Patient);
+  const userRepo = AppDataSource.getRepository(User);
+  const doctorRepo = AppDataSource.getRepository(Doctor);
+  const patientRepo = AppDataSource.getRepository(Patient);
   const appointmentRepo = AppDataSource.getRepository(Appointment);
-  const orderRepo       = AppDataSource.getRepository(MedicalOrder);
+  const orderRepo = AppDataSource.getRepository(MedicalOrder);
 
   await seedUsers(userRepo);
-  const doctors  = await seedDoctors(doctorRepo);
+  const doctors = await seedDoctors(doctorRepo);
   const patients = await seedPatients(patientRepo);
   await seedAppointments(appointmentRepo, orderRepo, doctors, patients);
 

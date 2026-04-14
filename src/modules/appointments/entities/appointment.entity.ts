@@ -36,13 +36,19 @@ export class Appointment {
   @Column({ type: 'timestamptz' })
   appointmentDate: Date;
 
-  @Column({ type: 'enum', enum: AppointmentStatus, default: AppointmentStatus.PROGRAMADA })
+  @Column({
+    type: 'enum',
+    enum: AppointmentStatus,
+    default: AppointmentStatus.PROGRAMADA,
+  })
   status: AppointmentStatus;
 
   @Column({ type: 'timestamptz', nullable: true })
   statusUpdatedAt: Date | null;
 
-  @OneToMany(() => MedicalOrder, (order) => order.appointment, { cascade: true })
+  @OneToMany(() => MedicalOrder, (order) => order.appointment, {
+    cascade: true,
+  })
   medicalOrders: MedicalOrder[];
 
   @CreateDateColumn()

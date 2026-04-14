@@ -15,6 +15,9 @@ export class CreateAppointmentDto {
     description: 'Desired appointment date (ISO 8601)',
   })
   @IsNotEmpty()
-  @IsDateString({}, { message: 'appointmentDate must be a valid ISO 8601 date' })
+  @IsDateString(
+    {},
+    { message: 'appointmentDate must be a valid ISO 8601 date' },
+  )
   appointmentDate: string;
 }

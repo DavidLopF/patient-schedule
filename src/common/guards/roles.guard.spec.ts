@@ -3,9 +3,8 @@ import { Reflector } from '@nestjs/core';
 import { ExecutionContext } from '@nestjs/common';
 import { RolesGuard } from './roles.guard';
 import { Role } from '../enums/role.enum';
-import { ROLES_KEY } from '../decorators/roles.decorator';
 
-const mockExecutionContext = (user: { role: Role } | null, roles: Role[] | null) => {
+const mockExecutionContext = (user: { role: Role } | null) => {
   return {
     getHandler: jest.fn(),
     getClass: jest.fn(),
@@ -47,8 +46,13 @@ describe('RolesGuard', () => {
   });
 
   it('should allow DOCTOR when multiple roles are required and DOCTOR is included', () => {
-    jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([Role.ADMIN, Role.DOCTOR]);
-    const ctx = mockExecutionContext({ role: Role.DOCTOR }, [Role.ADMIN, Role.DOCTOR]);
+    jest
+      .spyOn(reflector, 'getAllAndOverride')
+      .mockReturnValue([Role.ADMIN, Role.DOCTOR]);
+    const ctx = mockExecutionContext({ role: Role.DOCTOR }, [
+      Role.ADMIN,
+      Role.DOCTOR,
+    ]);
     expect(guard.canActivate(ctx)).toBe(true);
   });
 });

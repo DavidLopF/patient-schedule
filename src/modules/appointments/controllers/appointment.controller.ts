@@ -44,8 +44,14 @@ export class AppointmentController {
   @HttpCode(HttpStatus.CREATED)
   @Roles(Role.ADMIN, Role.RECEPTIONIST)
   @ApiOperation({ summary: 'Schedule a new appointment' })
-  @ApiResponse({ status: 201, description: 'Appointment created in PROGRAMADA status' })
-  @ApiResponse({ status: 409, description: 'Doctor not available at this time' })
+  @ApiResponse({
+    status: 201,
+    description: 'Appointment created in PROGRAMADA status',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'Doctor not available at this time',
+  })
   create(@Body() dto: CreateAppointmentDto) {
     return this.appointmentService.create(dto);
   }
@@ -77,7 +83,9 @@ export class AppointmentController {
 
   @Get('patient/:identification')
   @Roles(Role.ADMIN, Role.RECEPTIONIST, Role.DOCTOR)
-  @ApiOperation({ summary: 'Find appointments by patient identification number' })
+  @ApiOperation({
+    summary: 'Find appointments by patient identification number',
+  })
   @ApiParam({ name: 'identification', description: 'Patient ID number' })
   findByPatient(@Param('identification') identification: string) {
     return this.appointmentService.findByPatientIdentification(identification);
@@ -94,7 +102,10 @@ export class AppointmentController {
   @Roles(Role.ADMIN, Role.DOCTOR)
   @ApiOperation({ summary: 'Update appointment status (DOCTOR/ADMIN only)' })
   @ApiResponse({ status: 200, description: 'Status updated successfully' })
-  @ApiResponse({ status: 403, description: 'Doctor can only update their own appointments' })
+  @ApiResponse({
+    status: 403,
+    description: 'Doctor can only update their own appointments',
+  })
   updateStatus(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateStatusDto,
@@ -106,7 +117,9 @@ export class AppointmentController {
   @Post(':id/medical-orders')
   @HttpCode(HttpStatus.CREATED)
   @Roles(Role.ADMIN, Role.DOCTOR)
-  @ApiOperation({ summary: 'Attach a medical order to an appointment (DOCTOR/ADMIN only)' })
+  @ApiOperation({
+    summary: 'Attach a medical order to an appointment (DOCTOR/ADMIN only)',
+  })
   @ApiResponse({ status: 201, description: 'Medical order added' })
   addMedicalOrder(
     @Param('id', ParseUUIDPipe) id: string,

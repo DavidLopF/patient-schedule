@@ -8,14 +8,14 @@ export class IdempotencyService {
   private readonly store = new Map<string, unknown>();
   private readonly TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
-  async get(key: string): Promise<unknown | null> {
+  get(key: string): unknown {
     const entry = this.store.get(key);
-    if (!entry) return null;
+    if (entry === undefined) return null;
     this.logger.debug(`Idempotency cache HIT for key: ${key}`);
     return entry;
   }
 
-  async set(key: string, value: unknown): Promise<void> {
+  set(key: string, value: unknown): void {
     this.store.set(key, value);
     this.logger.debug(`Idempotency cache SET for key: ${key}`);
 
@@ -25,7 +25,7 @@ export class IdempotencyService {
     }, this.TTL_MS);
   }
 
-  async delete(key: string): Promise<void> {
+  delete(key: string): void {
     this.store.delete(key);
   }
 }

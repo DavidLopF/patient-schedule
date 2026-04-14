@@ -47,7 +47,10 @@ export class AppointmentService {
 
       return this.findOne(appointment.id);
     } catch (error) {
-      if (error instanceof Error && error.message.includes('already has an appointment')) {
+      if (
+        error instanceof Error &&
+        error.message.includes('already has an appointment')
+      ) {
         throw new ConflictException(
           'Doctor already has an appointment at this time. Please choose a different time or doctor.',
         );
@@ -59,7 +62,12 @@ export class AppointmentService {
     }
   }
 
-  async findAll(pagination: PaginationDto): Promise<{ data: Appointment[]; total: number; page: number; limit: number }> {
+  async findAll(pagination: PaginationDto): Promise<{
+    data: Appointment[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
     const { page = 1, limit = 10 } = pagination;
     const [data, total] = await this.appointmentRepository.findAll(page, limit);
     return { data, total, page, limit };
@@ -73,15 +81,27 @@ export class AppointmentService {
     return appointment;
   }
 
-  async findByPatientIdentification(identification: string): Promise<Appointment[]> {
-    return this.appointmentRepository.findByPatientIdentification(identification);
+  async findByPatientIdentification(
+    identification: string,
+  ): Promise<Appointment[]> {
+    return this.appointmentRepository.findByPatientIdentification(
+      identification,
+    );
   }
 
   async findByDate(date: string): Promise<Appointment[]> {
     return this.appointmentRepository.findByDate(date);
   }
 
-  async getAvailableDoctors(query: AvailableDoctorsQueryDto): Promise<Doctor[]> {
+  async getAvailableDoctors(
+    query: AvailableDoctorsQueryDto,
+  ): Promise<Doctor[]> {
+    //validemos si la fecha es superior a la fecha actual
+
+    if (new Date(query.date) <= new Date()) {
+      throw new BadRequestException('Date must be in the future');
+    }
+
     const appointmentDate = new Date(query.date);
     return this.appointmentRepository.findAvailableDoctors(appointmentDate);
   }
@@ -96,7 +116,9 @@ export class AppointmentService {
     // Only the assigned doctor or admin can change status
     if (currentUser.role === Role.DOCTOR) {
       if (appointment.doctor.id !== currentUser.sub) {
-        throw new ForbiddenException('You can only update status for your own appointments');
+        throw new ForbiddenException(
+          'You can only update status for your own appointments',
+        );
       }
     }
 
@@ -120,7 +142,9 @@ export class AppointmentService {
     // Only the assigned doctor or admin can add orders
     if (currentUser.role === Role.DOCTOR) {
       if (appointment.doctor.id !== currentUser.sub) {
-        throw new ForbiddenException('You can only add medical orders to your own appointments');
+        throw new ForbiddenException(
+          'You can only add medical orders to your own appointments',
+        );
       }
     }
 

@@ -43,7 +43,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         error = (res.error as string) ?? exception.name;
       }
     } else if (exception instanceof QueryFailedError) {
-      const pgError = exception as QueryFailedError & { code?: string; detail?: string };
+      const pgError = exception as QueryFailedError & {
+        code?: string;
+        detail?: string;
+      };
 
       if (pgError.code === '23505') {
         // Unique constraint violation
@@ -61,9 +64,15 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         error = 'Bad Request';
       }
 
-      this.logger.error(`DB Error [${pgError.code}]: ${pgError.message}`, pgError.detail);
+      this.logger.error(
+        `DB Error [${pgError.code}]: ${pgError.message}`,
+        pgError.detail,
+      );
     } else if (exception instanceof Error) {
-      this.logger.error(`Unhandled error: ${exception.message}`, exception.stack);
+      this.logger.error(
+        `Unhandled error: ${exception.message}`,
+        exception.stack,
+      );
     }
 
     const errorResponse: ErrorResponse = {

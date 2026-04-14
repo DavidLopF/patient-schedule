@@ -8,7 +8,10 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePatientDto {
-  @ApiProperty({ example: '1234567890', description: 'National ID number (numbers only, max 20)' })
+  @ApiProperty({
+    example: '1234567890',
+    description: 'National ID number (numbers only, max 20)',
+  })
   @IsNotEmpty()
   @IsString()
   @MaxLength(20)

@@ -8,6 +8,8 @@ export class UpdateStatusDto {
     example: AppointmentStatus.ASISTIO,
     description: 'New appointment status. Cannot change back to PROGRAMADA.',
   })
-  @IsEnum(AppointmentStatus, { message: 'status must be PROGRAMADA, ASISTIO or NO_ASISTIO' })
+  @IsEnum(AppointmentStatus, {
+    message: 'status must be PROGRAMADA, ASISTIO or NO_ASISTIO',
+  })
   status: AppointmentStatus;
 }

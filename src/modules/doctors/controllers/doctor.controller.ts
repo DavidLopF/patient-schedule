@@ -17,7 +17,6 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
-  ApiParam,
   ApiQuery,
 } from '@nestjs/swagger';
 import { DoctorService } from '../services/doctor.service';
@@ -72,10 +71,7 @@ export class DoctorController {
   @Put(':id')
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Update doctor data (ADMIN only)' })
-  update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: UpdateDoctorDto,
-  ) {
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateDoctorDto) {
     return this.doctorService.update(id, dto);
   }
 

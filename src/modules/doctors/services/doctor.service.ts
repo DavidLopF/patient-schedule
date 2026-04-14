@@ -14,7 +14,9 @@ export class DoctorService {
   constructor(private readonly doctorRepository: DoctorRepository) {}
 
   async create(dto: CreateDoctorDto): Promise<Doctor> {
-    const existing = await this.doctorRepository.findByIdentification(dto.identification);
+    const existing = await this.doctorRepository.findByIdentification(
+      dto.identification,
+    );
     if (existing) {
       throw new ConflictException(
         `Doctor with identification ${dto.identification} already exists`,
@@ -25,7 +27,9 @@ export class DoctorService {
     return this.doctorRepository.save(doctor);
   }
 
-  async findAll(pagination: PaginationDto): Promise<{ data: Doctor[]; total: number; page: number; limit: number }> {
+  async findAll(
+    pagination: PaginationDto,
+  ): Promise<{ data: Doctor[]; total: number; page: number; limit: number }> {
     const { page = 1, limit = 10 } = pagination;
     const [data, total] = await this.doctorRepository.findAll(page, limit);
     return { data, total, page, limit };
@@ -40,9 +44,12 @@ export class DoctorService {
   }
 
   async findByIdentification(identification: string): Promise<Doctor> {
-    const doctor = await this.doctorRepository.findByIdentification(identification);
+    const doctor =
+      await this.doctorRepository.findByIdentification(identification);
     if (!doctor) {
-      throw new NotFoundException(`Doctor with identification ${identification} not found`);
+      throw new NotFoundException(
+        `Doctor with identification ${identification} not found`,
+      );
     }
     return doctor;
   }

@@ -15,7 +15,9 @@ export class PatientService {
 
   async create(dto: CreatePatientDto): Promise<Patient> {
     // Idempotency: check by identification (natural unique key)
-    const existing = await this.patientRepository.findByIdentification(dto.identification);
+    const existing = await this.patientRepository.findByIdentification(
+      dto.identification,
+    );
     if (existing) {
       throw new ConflictException(
         `Patient with identification ${dto.identification} already exists`,
@@ -26,7 +28,9 @@ export class PatientService {
     return this.patientRepository.save(patient);
   }
 
-  async findAll(pagination: PaginationDto): Promise<{ data: Patient[]; total: number; page: number; limit: number }> {
+  async findAll(
+    pagination: PaginationDto,
+  ): Promise<{ data: Patient[]; total: number; page: number; limit: number }> {
     const { page = 1, limit = 10 } = pagination;
     const [data, total] = await this.patientRepository.findAll(page, limit);
     return { data, total, page, limit };
@@ -41,9 +45,12 @@ export class PatientService {
   }
 
   async findByIdentification(identification: string): Promise<Patient> {
-    const patient = await this.patientRepository.findByIdentification(identification);
+    const patient =
+      await this.patientRepository.findByIdentification(identification);
     if (!patient) {
-      throw new NotFoundException(`Patient with identification ${identification} not found`);
+      throw new NotFoundException(
+        `Patient with identification ${identification} not found`,
+      );
     }
     return patient;
   }

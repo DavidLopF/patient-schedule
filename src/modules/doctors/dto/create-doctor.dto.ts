@@ -9,7 +9,10 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateDoctorDto {
-  @ApiProperty({ example: '9876543210', description: 'National ID number (numbers only, max 20)' })
+  @ApiProperty({
+    example: '9876543210',
+    description: 'National ID number (numbers only, max 20)',
+  })
   @IsNotEmpty()
   @IsString()
   @MaxLength(20)
@@ -51,13 +54,22 @@ export class CreateDoctorDto {
   @MaxLength(90)
   city: string;
 
-  @ApiProperty({ example: 'TP-12345', description: 'Professional medical card number' })
+  @ApiProperty({
+    example: 'TP-12345',
+    description: 'Professional medical card number',
+  })
   @IsNotEmpty()
   @IsString()
   @MaxLength(50)
   professionalCard: string;
 
-  @ApiProperty({ example: '2020-03-15', description: 'Date joined the medical center (YYYY-MM-DD)' })
-  @IsDateString({}, { message: 'admissionDate must be a valid date (YYYY-MM-DD)' })
+  @ApiProperty({
+    example: '2020-03-15',
+    description: 'Date joined the medical center (YYYY-MM-DD)',
+  })
+  @IsDateString(
+    {},
+    { message: 'admissionDate must be a valid date (YYYY-MM-DD)' },
+  )
   admissionDate: string;
 }

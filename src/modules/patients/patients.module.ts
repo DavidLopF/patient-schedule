@@ -9,7 +9,12 @@ import { IdempotencyInterceptor } from '../../common/interceptors/idempotency.in
 
 @Module({
   imports: [TypeOrmModule.forFeature([Patient])],
-  providers: [PatientService, PatientRepository, IdempotencyService, IdempotencyInterceptor],
+  providers: [
+    PatientService,
+    PatientRepository,
+    IdempotencyService,
+    IdempotencyInterceptor,
+  ],
   controllers: [PatientController],
   exports: [PatientService, PatientRepository],
 })

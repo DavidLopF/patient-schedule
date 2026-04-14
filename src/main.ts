@@ -1,4 +1,4 @@
-import { NestFactory, Reflector } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
@@ -19,9 +19,9 @@ async function bootstrap() {
   // Global Validation Pipe — strict, with detailed error messages
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,            // Strip unknown properties
+      whitelist: true, // Strip unknown properties
       forbidNonWhitelisted: true, // Throw on unknown properties
-      transform: true,            // Auto-transform types (e.g. string → number)
+      transform: true, // Auto-transform types (e.g. string → number)
       transformOptions: { enableImplicitConversion: true },
     }),
   );
@@ -31,7 +31,7 @@ async function bootstrap() {
     .setTitle('Hospital Management API')
     .setDescription(
       'REST API for managing hospital patients, doctors, appointments, and medical orders. ' +
-      'All endpoints require JWT Bearer authentication unless otherwise noted.',
+        'All endpoints require JWT Bearer authentication unless otherwise noted.',
     )
     .setVersion('1.0.0')
     .addBearerAuth()
@@ -52,6 +52,8 @@ async function bootstrap() {
   await app.listen(port);
 
   console.log(`🚀 Application running on: http://localhost:${port}/api/v1`);
-  console.log(`📚 Swagger docs available at: http://localhost:${port}/api/docs`);
+  console.log(
+    `📚 Swagger docs available at: http://localhost:${port}/api/docs`,
+  );
 }
-bootstrap();
+void bootstrap();

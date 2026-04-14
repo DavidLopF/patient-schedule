@@ -66,7 +66,11 @@ describe('AuthService', () => {
       userRepository.findOne.mockResolvedValue(mockUser());
 
       await expect(
-        service.register({ email: 'admin@hospital.com', password: 'SecurePass123!', role: Role.ADMIN }),
+        service.register({
+          email: 'admin@hospital.com',
+          password: 'SecurePass123!',
+          role: Role.ADMIN,
+        }),
       ).rejects.toThrow(ConflictException);
     });
   });
@@ -95,7 +99,10 @@ describe('AuthService', () => {
       userRepository.findOne.mockResolvedValue(null);
 
       await expect(
-        service.login({ email: 'notfound@hospital.com', password: 'AnyPass123!' }),
+        service.login({
+          email: 'notfound@hospital.com',
+          password: 'AnyPass123!',
+        }),
       ).rejects.toThrow(UnauthorizedException);
     });
   });

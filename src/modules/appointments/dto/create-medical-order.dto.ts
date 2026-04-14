@@ -7,8 +7,14 @@ export class CreateMedicalOrderDto {
   @IsString()
   description: string;
 
-  @ApiProperty({ example: '2026-12-31', description: 'Order expiration date (YYYY-MM-DD)' })
-  @IsDateString({}, { message: 'expirationDate must be a valid date (YYYY-MM-DD)' })
+  @ApiProperty({
+    example: '2026-12-31',
+    description: 'Order expiration date (YYYY-MM-DD)',
+  })
+  @IsDateString(
+    {},
+    { message: 'expirationDate must be a valid date (YYYY-MM-DD)' },
+  )
   expirationDate: string;
 
   @ApiProperty({ example: 'Internal Medicine', maxLength: 100 })

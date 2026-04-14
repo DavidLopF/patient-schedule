@@ -11,7 +11,11 @@ export class ApiResponseDto<T> {
     this.timestamp = new Date().toISOString();
   }
 
-  static success<T>(data: T, message = 'Success', statusCode = 200): ApiResponseDto<T> {
+  static success<T>(
+    data: T,
+    message = 'Success',
+    statusCode = 200,
+  ): ApiResponseDto<T> {
     return new ApiResponseDto(statusCode, message, data);
   }
 

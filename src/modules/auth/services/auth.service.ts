@@ -21,7 +21,9 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto): Promise<{ accessToken: string }> {
-    const existing = await this.userRepository.findOne({ where: { email: dto.email } });
+    const existing = await this.userRepository.findOne({
+      where: { email: dto.email },
+    });
     if (existing) {
       throw new ConflictException('Email already registered');
     }
@@ -38,7 +40,9 @@ export class AuthService {
   }
 
   async login(dto: LoginDto): Promise<{ accessToken: string }> {
-    const user = await this.userRepository.findOne({ where: { email: dto.email, isActive: true } });
+    const user = await this.userRepository.findOne({
+      where: { email: dto.email, isActive: true },
+    });
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -52,7 +56,11 @@ export class AuthService {
   }
 
   private generateToken(user: User): { accessToken: string } {
-    const payload: JwtPayload = { sub: user.id, email: user.email, role: user.role };
+    const payload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    };
     return { accessToken: this.jwtService.sign(payload) };
   }
 }
