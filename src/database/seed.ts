@@ -268,11 +268,21 @@ async function seedAppointments(
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
+  const databaseUrl = process.env.DATABASE_URL;
+  const databaseLabel = databaseUrl
+    ? (() => {
+        try {
+          const parsed = new URL(databaseUrl);
+          return `${parsed.pathname.replace(/^\//, '') || 'unknown_db'} @ ${parsed.hostname}`;
+        } catch {
+          return 'invalid DATABASE_URL';
+        }
+      })()
+    : 'DATABASE_URL not set';
+
   console.log('🌱 Starting database seed...');
   console.log(`   Environment: ${process.env.NODE_ENV ?? 'development'}`);
-  console.log(
-    `   Database:    ${process.env.DB_NAME ?? 'hospital_db'} @ ${process.env.DB_HOST ?? 'localhost'}`,
-  );
+  console.log(`   Database:    ${databaseLabel}`);
 
   await AppDataSource.initialize();
   console.log('   Connected to database ✓');

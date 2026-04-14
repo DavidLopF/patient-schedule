@@ -5,13 +5,22 @@ import * as dotenv from 'dotenv';
 // Load .env manually — this file runs outside of NestJS context (TypeORM CLI)
 dotenv.config();
 
+const toBoolean = (value?: string): boolean =>
+  ['true', '1', 'yes', 'on'].includes((value ?? '').toLowerCase());
+
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL is required');
+}
+
+const sslEnabled = toBoolean(process.env.DB_SSL);
+const rejectUnauthorized = toBoolean(
+  process.env.DB_SSL_REJECT_UNAUTHORIZED ?? 'false',
+);
+
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  host: process.env.DB_HOST ?? 'localhost',
-  port: parseInt(process.env.DB_PORT ?? '5432', 10),
-  username: process.env.DB_USERNAME ?? 'postgres',
-  password: process.env.DB_PASSWORD ?? 'postgres',
-  database: process.env.DB_NAME ?? 'hospital_db',
+  url: databaseUrl,
 
   // Entities — uses compiled JS in production, TS in dev via ts-node
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
@@ -23,4 +32,9 @@ export const AppDataSource = new DataSource({
   synchronize: false,
 
   logging: process.env.NODE_ENV === 'development',
+  ...(sslEnabled
+    ? {
+        ssl: { rejectUnauthorized },
+      }
+    : {}),
 });

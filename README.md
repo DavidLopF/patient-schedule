@@ -173,10 +173,8 @@ Set production environment variables:
 ```
 NODE_ENV=production
 JWT_SECRET=<strong-random-secret>
-DB_HOST=<your-postgres-host>
-DB_PORT=5432
-DB_USERNAME=<username>
-DB_PASSWORD=<password>
-DB_NAME=hospital_db
+DATABASE_URL=postgresql://<user>:<password>@<host>:5432/<database>?sslmode=require
+DB_SSL=true
+DB_SSL_REJECT_UNAUTHORIZED=false
 ```
 # patient-schedule
