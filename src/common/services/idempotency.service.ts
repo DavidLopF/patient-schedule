@@ -1,31 +1,54 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
+import type Redis from 'ioredis';
+import { REDIS_CLIENT } from '../redis/redis.module';
 
-// In-memory idempotency store (use Redis in production)
-// For production: inject Redis client and store with TTL
+const TTL_SECONDS = 24 * 60 * 60; // 24 hours
+const KEY_PREFIX = 'idempotency:';
+
 @Injectable()
 export class IdempotencyService {
   private readonly logger = new Logger(IdempotencyService.name);
-  private readonly store = new Map<string, unknown>();
-  private readonly TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
-  get(key: string): unknown {
-    const entry = this.store.get(key);
-    if (entry === undefined) return null;
-    this.logger.debug(`Idempotency cache HIT for key: ${key}`);
-    return entry;
+  constructor(@Inject(REDIS_CLIENT) private readonly redis: Redis) {}
+
+  async get(key: string): Promise<unknown> {
+    try {
+      const raw = await this.redis.get(`${KEY_PREFIX}${key}`);
+      if (!raw) return null;
+
+      this.logger.debug(`Cache HIT for idempotency key: ${key}`);
+      return JSON.parse(raw) as unknown;
+    } catch (err) {
+      this.logger.warn(
+        `Redis GET failed for key ${key}: ${(err as Error).message}`,
+      );
+      return null; // fail-open: let request proceed normally
+    }
   }
 
-  set(key: string, value: unknown): void {
-    this.store.set(key, value);
-    this.logger.debug(`Idempotency cache SET for key: ${key}`);
-
-    // Auto-cleanup after TTL
-    setTimeout(() => {
-      this.store.delete(key);
-    }, this.TTL_MS);
+  async set(key: string, value: unknown): Promise<void> {
+    try {
+      await this.redis.setex(
+        `${KEY_PREFIX}${key}`,
+        TTL_SECONDS,
+        JSON.stringify(value),
+      );
+      this.logger.debug(`Cache SET for idempotency key: ${key} (TTL: 24h)`);
+    } catch (err) {
+      this.logger.warn(
+        `Redis SET failed for key ${key}: ${(err as Error).message}`,
+      );
+      // fail-open: response already sent, just log
+    }
   }
 
-  delete(key: string): void {
-    this.store.delete(key);
+  async delete(key: string): Promise<void> {
+    try {
+      await this.redis.del(`${KEY_PREFIX}${key}`);
+    } catch (err) {
+      this.logger.warn(
+        `Redis DEL failed for key ${key}: ${(err as Error).message}`,
+      );
+    }
   }
 }

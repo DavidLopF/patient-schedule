@@ -13,8 +13,11 @@ import { AppointmentsModule } from './modules/appointments/appointments.module';
 
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { HealthController } from './health/health.controller';
+import { RedisModule } from './common/redis/redis.module';
 
 @Module({
+  controllers: [HealthController],
   imports: [
     // Configuration
     ConfigModule.forRoot({
@@ -30,6 +33,9 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
         configService.get('database') as import('typeorm').DataSourceOptions,
       inject: [ConfigService],
     }),
+
+    // Infrastructure
+    RedisModule,
 
     // Feature Modules
     AuthModule,

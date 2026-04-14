@@ -14,13 +14,15 @@ services:
       PORT: 3000
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USERNAME: ${DB_USERNAME:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
-      DB_NAME: ${DB_NAME:-hospital_db}
+      DATABASE_URL: ${DATABASE_URL}
+      DB_SSL: ${DB_SSL:-false}
+      DB_SSL_REJECT_UNAUTHORIZED: ${DB_SSL_REJECT_UNAUTHORIZED:-false}
+      # Redis — leave unset to use the local redis service below
+      REDIS_URL: ${REDIS_URL:-}
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     restart: unless-stopped
     networks:
@@ -46,8 +48,25 @@ services:
     networks:
       - hospital_network
 
+  redis:
+    image: redis:7-alpine
+    container_name: hospital_redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - hospital_network
+
 volumes:
   postgres_data:
+  redis_data:
 
 networks:
   hospital_network:

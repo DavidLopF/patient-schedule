@@ -10,8 +10,10 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.get<number>('app.port') ?? 3000;
 
-  // Global API prefix
-  app.setGlobalPrefix('api/v1');
+  // Global API prefix — exclude health endpoints so / and /health respond without prefix
+  app.setGlobalPrefix('api/v1', {
+    exclude: ['/', 'health'],
+  });
 
   // CORS
   app.enableCors();

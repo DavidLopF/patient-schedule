@@ -4,7 +4,7 @@ import {
   ExecutionContext,
   CallHandler,
 } from '@nestjs/common';
-import { Observable, of } from 'rxjs';
+import { Observable, from, of, switchMap } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { IdempotencyService } from '../services/idempotency.service';
 
@@ -12,10 +12,14 @@ import { IdempotencyService } from '../services/idempotency.service';
 export class IdempotencyInterceptor implements NestInterceptor {
   constructor(private readonly idempotencyService: IdempotencyService) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Observable<unknown> {
     const request = context
       .switchToHttp()
       .getRequest<import('express').Request>();
+
     const idempotencyKey = request.headers['idempotency-key'] as
       | string
       | undefined;
@@ -24,14 +28,21 @@ export class IdempotencyInterceptor implements NestInterceptor {
       return next.handle();
     }
 
-    const existing = this.idempotencyService.get(idempotencyKey);
-    if (existing) {
-      return of(existing);
-    }
+    // Convert async Redis lookup to Observable pipeline
+    return from(this.idempotencyService.get(idempotencyKey)).pipe(
+      switchMap((existing) => {
+        if (existing) {
+          // Cache HIT — return stored response immediately
+          return of(existing);
+        }
 
-    return next.handle().pipe(
-      tap((data: unknown) => {
-        this.idempotencyService.set(idempotencyKey, data);
+        // Cache MISS — execute handler and cache the result
+        return next.handle().pipe(
+          tap((data: unknown) => {
+            // Fire-and-forget: store response, don't await
+            void this.idempotencyService.set(idempotencyKey, data);
+          }),
+        );
       }),
     );
   }

@@ -4,4 +4,5 @@ export default registerAs('app', () => ({
   port: parseInt(process.env.PORT ?? '3000', 10),
   jwtSecret: process.env.JWT_SECRET ?? 'super-secret-key-change-in-production',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '7d',
+  redisUrl: process.env.REDIS_URL,
 }));
