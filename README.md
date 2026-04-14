@@ -165,9 +165,7 @@ npm run test:cov
 
 The project is ready for deployment to any platform supporting Docker:
 
-- **Railway** — Connect GitHub repo, add PostgreSQL plugin, set env vars
 - **Render** — Docker deploy with managed PostgreSQL
-- **Fly.io** — `fly launch` with PostgreSQL add-on
 
 Set production environment variables:
 ```
@@ -177,4 +175,3 @@ DATABASE_URL=postgresql://<user>:<password>@<host>:5432/<database>?sslmode=requi
 DB_SSL=true
 DB_SSL_REJECT_UNAUTHORIZED=false
 ```
-# patient-schedule
